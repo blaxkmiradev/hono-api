@@ -1,28 +1,26 @@
 import { Hono } from 'hono'
+import userRoutes from './routes/user.js'
+import logger from './middleware/logger.js'
 
 const app = new Hono()
 
-// Home
+// middleware
+app.use('*', logger)
+
+// routes
+app.route('/user', userRoutes)
+
+// home
 app.get('/', (c) => {
-  return c.json({ message: 'Hono API running 🚀' })
-})
-
-// GET
-app.get('/user', (c) => {
-  return c.json({
-    id: 1,
-    name: 'Mira',
-    status: 'active'
-  })
-})
-
-// POST
-app.post('/user', async (c) => {
-  const body = await c.req.json()
-  return c.json({
-    message: 'User created',
-    data: body
-  })
+  return c.json({ message: 'API running 🚀' })
 })
 
 export default app
+
+// run on Node.js
+import { serve } from '@hono/node-server'
+
+serve({
+  fetch: app.fetch,
+  port: 3000
+})
